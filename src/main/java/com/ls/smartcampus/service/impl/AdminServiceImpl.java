@@ -1,0 +1,24 @@
+package com.ls.smartcampus.service.impl;
+
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ls.smartcampus.pojo.Admin;
+import com.ls.smartcampus.service.AdminService;
+import com.ls.smartcampus.mapper.AdminMapper;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+* @author LS
+* @description 针对表【tb_admin】的数据库操作Service实现
+* @createDate 2022-04-26 16:55:14
+*/
+@Service
+@Transactional
+public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
+    implements AdminService{
+
+}
+
+
+
+
