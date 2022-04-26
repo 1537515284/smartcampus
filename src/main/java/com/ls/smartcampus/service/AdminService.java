@@ -11,4 +11,6 @@ import com.ls.smartcampus.pojo.LoginForm;
 */
 public interface AdminService extends IService<Admin> {
     Admin login(LoginForm loginForm);
+
+    Admin getAdminById(Long id);
 }

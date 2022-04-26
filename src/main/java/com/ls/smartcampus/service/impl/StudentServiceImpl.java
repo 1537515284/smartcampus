@@ -23,11 +23,17 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student>
     @Override
     public Student login(LoginForm loginForm) {
         QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("name",loginForm.getUsername());
+        queryWrapper.eq("name", loginForm.getUsername());
         queryWrapper.eq("password", MD5.encrypt(loginForm.getPassword()));
-
         Student student = baseMapper.selectOne(queryWrapper);
         return student;
+    }
+
+    @Override
+    public Student getStudentById(Long id) {
+        QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",id);
+        return baseMapper.selectOne(queryWrapper);
     }
 }
 

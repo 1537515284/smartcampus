@@ -10,9 +10,9 @@ import com.ls.smartcampus.service.TeacherService;
 import com.ls.smartcampus.util.CreateVerificationCodeImage;
 import com.ls.smartcampus.util.JwtHelper;
 import com.ls.smartcampus.util.Result;
+import com.ls.smartcampus.util.ResultCodeEnum;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
@@ -36,6 +36,38 @@ public class SystemController {
     private final StudentService studentService;
     @NonNull
     private final TeacherService teacherService;
+
+    @GetMapping("/getInfo")
+    public Result getInfoByToken(@RequestHeader("token") String token){
+        boolean expiration = JwtHelper.isExpiration(token);
+        if(expiration){
+            return Result.build(null, ResultCodeEnum.TOKEN_ERROR);
+        }
+        // 从token中解析出 用户id 和 用户的类型
+        Long userId = JwtHelper.getUserId(token);
+        Integer userType = JwtHelper.getUserType(token);
+
+        Map<String ,Object> map = new LinkedHashMap<>();
+        switch (userType){
+            case 1:
+                Admin admin = adminService.getAdminById(userId);
+                map.put("userType",userType);
+                map.put("user",admin);
+                break;
+            case 2:
+                Student student = studentService.getStudentById(userId);
+                map.put("userType",userType);
+                map.put("user",student);
+                break;
+            case 3:
+                Teacher teacher = teacherService.getTeacherById(userId);
+                map.put("userType",userType);
+                map.put("user",teacher);
+                break;
+        }
+
+        return Result.ok(map);
+    }
 
 
     @PostMapping("/login")

@@ -29,6 +29,11 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
         Admin admin = baseMapper.selectOne(queryWrapper);
         return admin;
     }
+
+    @Override
+    public Admin getAdminById(Long id) {
+        return baseMapper.selectById(id);
+    }
 }
 
 
