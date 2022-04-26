@@ -1,5 +1,6 @@
 package com.ls.smartcampus.service;
 
+import com.ls.smartcampus.pojo.LoginForm;
 import com.ls.smartcampus.pojo.Teacher;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -9,5 +10,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2022-04-26 17:00:32
 */
 public interface TeacherService extends IService<Teacher> {
-
+    Teacher login(LoginForm loginForm);
 }
