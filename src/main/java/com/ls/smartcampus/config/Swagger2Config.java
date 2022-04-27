@@ -54,8 +54,11 @@ public class Swagger2Config {
                 .groupName("webApi")
                 .apiInfo(webApiInfo())
                 .select()
-                //可以测试请求头中：输入token
-                .apis(RequestHandlerSelectors.withClassAnnotation(ApiOperation.class))
+                // 可以测试请求头中：输入token
+                // 方法上加了ApiOperation注解的类，才生成接口文档
+//                .apis(RequestHandlerSelectors.withClassAnnotation(ApiOperation.class))
+                // 扫描指定的包，包下的类，才生成接口文档
+                .apis(RequestHandlerSelectors.basePackage("com.ls.smartcampus.controller"))
                 //过滤掉admin路径下的所有页面
                 //.paths(Predicates.and(PathSelectors.regex("/sms/.*")))
                 //过滤掉所有error或error.*页面
