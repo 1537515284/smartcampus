@@ -24,6 +24,14 @@ public class GradeController {
     @NonNull
     private GradeService gradeService;
 
+    @ApiOperation("获取所有年级信息")
+    @GetMapping("/getGrades")
+    public Result getGrades(){
+        List<Grade> list = gradeService.list();
+        return Result.ok(list);
+    }
+
+
     @ApiOperation("删除Grade信息")
     @DeleteMapping("/deleteGrade")
     public Result deleteGrade(
