@@ -7,13 +7,15 @@ import com.ls.smartcampus.pojo.Teacher;
 import com.ls.smartcampus.service.AdminService;
 import com.ls.smartcampus.service.StudentService;
 import com.ls.smartcampus.service.TeacherService;
-import com.ls.smartcampus.util.CreateVerificationCodeImage;
-import com.ls.smartcampus.util.JwtHelper;
-import com.ls.smartcampus.util.Result;
-import com.ls.smartcampus.util.ResultCodeEnum;
+import com.ls.smartcampus.util.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
@@ -21,10 +23,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 
+@Api(tags = "系统控制器")
 @RestController
 @RequestMapping("/sms/system")
 @RequiredArgsConstructor
@@ -37,6 +42,78 @@ public class SystemController {
     @NonNull
     private final TeacherService teacherService;
 
+    @ApiOperation("修改密码")
+    @PostMapping({"updatePwd/{oldPassword}/{newPassword}"})
+    public Result updatePwd(@RequestHeader("token") String token, @ApiParam("旧密码") @PathVariable String oldPassword, @ApiParam("新密码") @PathVariable String newPassword) {
+        boolean expiration = JwtHelper.isExpiration(token);
+        if (expiration) {
+            return Result.build((Object)null, ResultCodeEnum.TOKEN_ERROR);
+        } else {
+            // 获取用户id和类型
+            Long userId = JwtHelper.getUserId(token);
+            Integer userType = JwtHelper.getUserType(token);
+
+            oldPassword = MD5.encrypt(oldPassword);
+            newPassword = MD5.encrypt(newPassword);
+
+            switch(userType) {
+                case 1:
+                    Admin admin = this.adminService.getAdminById(userId);
+                    if (!oldPassword.equals(admin.getPassword())) {
+                        return Result.fail().message("原密码有误!");
+                    }
+
+                    admin.setPassword(newPassword);
+                    this.adminService.saveOrUpdate(admin);
+                    break;
+                case 2:
+                    Student student = this.studentService.getStudentById(userId);
+                    if (!oldPassword.equals(student.getPassword())) {
+                        return Result.fail().message("原密码有误!");
+                    }
+
+                    student.setPassword(newPassword);
+                    this.studentService.saveOrUpdate(student);
+                    break;
+                case 3:
+                    Teacher teacher = this.teacherService.getTeacherById(userId);
+                    if (!oldPassword.equals(teacher.getPassword())) {
+                        return Result.fail().message("原密码有误!");
+                    }
+
+                    teacher.setPassword(newPassword);
+                    this.teacherService.saveOrUpdate(teacher);
+            }
+
+            return Result.ok();
+        }
+    }
+
+    @ApiOperation("文件上传统一入口")
+    @PostMapping({"/headerImgUpload"})
+    public Result headerImgUpload(
+            @ApiParam("头像文件") @RequestPart("multipartFile") MultipartFile multipartFile
+    ) {
+        // 通过UUID生成新的文件名
+        String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+        String originalFilename = multipartFile.getOriginalFilename();
+        String newFilename = uuid + originalFilename.substring(originalFilename.lastIndexOf("."));
+
+        // 获取 target目录下public/upload的绝对路径
+        String parentPath = ClassUtils.getDefaultClassLoader().getResource("public/upload").getPath();
+        String portraitPath = parentPath + "/" + newFilename;
+
+        try {
+            multipartFile.transferTo(new File(portraitPath));
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+
+        String path = "upload/" + newFilename;
+        return Result.ok(path);
+    }
+
+    @ApiOperation("获取用户信息和类型")
     @GetMapping("/getInfo")
     public Result getInfoByToken(@RequestHeader("token") String token){
         boolean expiration = JwtHelper.isExpiration(token);
@@ -69,7 +146,7 @@ public class SystemController {
         return Result.ok(map);
     }
 
-
+    @ApiOperation("登录接口")
     @PostMapping("/login")
     public Result login(@RequestBody LoginForm loginForm, HttpSession session) {
         // 验证码校验
@@ -138,6 +215,7 @@ public class SystemController {
     }
 
 
+    @ApiOperation("获取验证码图像")
     @GetMapping("/getVerifiCodeImage")
     public void getVerificationCodeImage(HttpServletRequest request, HttpServletResponse response){
         // 获取图片
