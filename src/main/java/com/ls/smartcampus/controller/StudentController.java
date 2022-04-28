@@ -51,12 +51,12 @@ public class StudentController {
 
 
     // /sms/studentController/getStudentByOpr/1/3?name=李四&clazzName=一年一班
-    @ApiOperation("分页带条件查询")
+    @ApiOperation("带条件的分页查询")
     @GetMapping("/getStudentByOpr/{pageNo}/{pageSize}")
     public Result getStudentByOpr(
             @ApiParam("分页查询的页码数") @PathVariable("pageNo") Integer pageNo,
             @ApiParam("分页查询的页大小") @PathVariable("pageSize") Integer pageSize,
-            @ApiParam("查询条件---模糊匹配的学生姓名") Student student
+            @ApiParam("查询条件---模糊匹配的学生信息") Student student
     ){
         Page<Student> page = new Page<>(pageNo,pageSize);
         IPage<Student> iPage = studentService.getStudentByOpr(page,student);
