@@ -32,19 +32,19 @@ public class GradeController {
     }
 
 
-    @ApiOperation("删除Grade信息")
+    @ApiOperation("删除单个或多个年级的信息")
     @DeleteMapping("/deleteGrade")
     public Result deleteGrade(
-            @ApiParam("要删除的所有的grade的id的JSON集合") @RequestBody List<Integer> ids
+            @ApiParam("要删除年级的id的JSON集合") @RequestBody List<Integer> ids
     ){
         gradeService.removeByIds(ids);
         return Result.ok();
     }
 
-    @ApiOperation("新增或修改grade，有id属性是修改，没有是增加")
+    @ApiOperation("保存或修改年级信息，有id属性是修改，没有是增加")
     @PostMapping("/saveOrUpdateGrade")
     public Result saveOrUpdateGrade(
-            @ApiParam("JSON格式的Grade对象") @RequestBody Grade grade){
+            @ApiParam("JSON格式的年级信息") @RequestBody Grade grade){
         // 接收参数
         // 调用服务层方法完成增加或修改
         gradeService.saveOrUpdate(grade);
@@ -53,12 +53,12 @@ public class GradeController {
 
 
     //sms/gradeController/getGrades/1/3?gradeName=%E4%B8%B9
-    @ApiOperation("根据年级名称模糊查询，带分页功能")
+    @ApiOperation("带条件的分页查询")
     @GetMapping("/getGrades/{pageNo}/{pageSize}")
     public Result getGrades(
             @ApiParam("分页查询的页码") @PathVariable("pageNo") Integer pageNo,
             @ApiParam("分页查询的大小") @PathVariable("pageSize") Integer pageSize,
-            @ApiParam("模糊匹配的年级名称") String gradeName
+            @ApiParam("查询的条件---模糊匹配的年级名称") String gradeName
     ){
         // 分页 带条件查询
         Page<Grade> page = new Page<>(pageNo,pageSize);
