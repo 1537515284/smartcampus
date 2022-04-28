@@ -1,5 +1,7 @@
 package com.ls.smartcampus.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ls.smartcampus.pojo.Admin;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ls.smartcampus.pojo.LoginForm;
@@ -13,4 +15,6 @@ public interface AdminService extends IService<Admin> {
     Admin login(LoginForm loginForm);
 
     Admin getAdminById(Long id);
+
+    IPage<Admin> getAdminByOpr(Page<Admin> page, String name);
 }
