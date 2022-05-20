@@ -1,6 +1,11 @@
 server:
   port: 9001
 
+
+file:
+  staticAccessPath: /files/**
+  uploadFolder: D:/ls/java/javaIO/uploadFiles/
+
 spring:
 
   mvc:

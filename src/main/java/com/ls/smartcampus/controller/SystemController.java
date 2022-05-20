@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -89,6 +90,9 @@ public class SystemController {
         }
     }
 
+    @Value("${file.uploadFolder}")
+    private String uploadFolder;
+
     @ApiOperation("文件上传统一入口")
     @PostMapping({"/headerImgUpload"})
     public Result headerImgUpload(
@@ -100,16 +104,26 @@ public class SystemController {
         String newFilename = uuid + originalFilename.substring(originalFilename.lastIndexOf("."));
 
         // 获取 target目录下public/upload的绝对路径
-        String parentPath = ClassUtils.getDefaultClassLoader().getResource("public/upload").getPath();
-        String portraitPath = parentPath + "/" + newFilename;
+//        String parentPath = ClassUtils.getDefaultClassLoader().getResource("public/upload").getPath();
+//        String portraitPath = parentPath + "/" + newFilename;
+
+        // 放在自定义的外部目录
+        File folder=new File(uploadFolder);
+        if (!folder.isDirectory())
+        {
+            if (!folder.mkdirs())
+            {
+                throw new RuntimeException("文件夹创建失败");
+            }
+        }
 
         try {
-            multipartFile.transferTo(new File(portraitPath));
+            multipartFile.transferTo(new File(folder,newFilename));
         } catch (IOException exception) {
             exception.printStackTrace();
         }
 
-        String path = "upload/" + newFilename;
+        String path = "files/" + newFilename;
         return Result.ok(path);
     }
 
