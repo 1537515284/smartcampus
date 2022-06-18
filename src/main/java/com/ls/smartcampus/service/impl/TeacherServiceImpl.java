@@ -24,20 +24,20 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher>
     implements TeacherService{
 
     public Teacher login(LoginForm loginForm) {
-        QueryWrapper<Teacher> queryWrapper = new QueryWrapper();
+        QueryWrapper<Teacher> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("name", loginForm.getUsername());
         queryWrapper.eq("password", MD5.encrypt(loginForm.getPassword()));
-        Teacher teacher = (Teacher)((TeacherMapper)this.baseMapper).selectOne(queryWrapper);
+        Teacher teacher = baseMapper.selectOne(queryWrapper);
         return teacher;
     }
 
     public Teacher getTeacherById(Long id) {
-        Teacher teacher = (Teacher)((TeacherMapper)this.baseMapper).selectById(id);
+        Teacher teacher = baseMapper.selectById(id);
         return teacher;
     }
 
     public IPage<Teacher> getTeacherByOpr(Page<Teacher> page, Teacher teacher) {
-        QueryWrapper<Teacher> queryWrapper = new QueryWrapper();
+        QueryWrapper<Teacher> queryWrapper = new QueryWrapper<>();
         String name = teacher.getName();
         if (!StringUtils.isEmpty(name)) {
             queryWrapper.like("name", name);
@@ -49,7 +49,7 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher>
         }
 
         queryWrapper.orderByDesc("id");
-        Page<Teacher> teacherPage = (Page)((TeacherMapper)this.baseMapper).selectPage(page, queryWrapper);
+        Page<Teacher> teacherPage = baseMapper.selectPage(page, queryWrapper);
         return teacherPage;
     }
 }

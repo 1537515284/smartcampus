@@ -24,15 +24,15 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
     implements AdminService{
 
     public Admin login(LoginForm loginForm) {
-        QueryWrapper<Admin> queryWrapper = new QueryWrapper();
+        QueryWrapper<Admin> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("name", loginForm.getUsername());
         queryWrapper.eq("password", MD5.encrypt(loginForm.getPassword()));
-        Admin admin = (Admin)((AdminMapper)this.baseMapper).selectOne(queryWrapper);
+        Admin admin = baseMapper.selectOne(queryWrapper);
         return admin;
     }
 
     public Admin getAdminById(Long id) {
-        return (Admin)((AdminMapper)this.baseMapper).selectById(id);
+        return baseMapper.selectById(id);
     }
 
     public IPage<Admin> getAdminByOpr(Page<Admin> page, String name) {
@@ -42,7 +42,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
         }
 
         queryWrapper.orderByDesc("id");
-        Page<Admin> adminPage = (Page)((AdminMapper)this.baseMapper).selectPage(page, queryWrapper);
+        Page<Admin> adminPage = baseMapper.selectPage(page, queryWrapper);
         return adminPage;
     }
 }
